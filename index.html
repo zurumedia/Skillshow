@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10100f">
+<title>SkillShow — Make your skills visible</title>
+<style>
+:root{--bg:#10100f;--panel:#191917;--panel2:#20201d;--line:#30302b;--text:#f6f3ec;--muted:#aaa99f;--accent:#d9ff72;--radius:20px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 90% 0%,#29311a 0,transparent 35%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.wrap{max-width:1120px;margin:auto;padding:0 20px}.topbar{position:sticky;top:0;z-index:5;background:#10100fee;border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}.nav{height:70px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:19px;letter-spacing:-.6px;text-decoration:none;color:inherit}.logo{width:35px;height:35px;display:grid;place-items:center;border-radius:12px;background:var(--accent);color:#171810;font-weight:950}.navlinks{display:flex;align-items:center;gap:22px}.navlinks a{color:var(--muted);text-decoration:none}.navlinks a:hover{color:var(--text)}.btn{border:1px solid var(--line);border-radius:13px;padding:10px 15px;background:var(--panel2);color:var(--text);font-weight:700}.btn.primary{background:var(--accent);color:#171810;border-color:var(--accent)}.btn:disabled{opacity:.55;cursor:not-allowed}.hero{padding:68px 0 42px;display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:center}.eyebrow{color:var(--accent);font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:800}.hero h1{font-size:clamp(42px,7vw,76px);line-height:.99;letter-spacing:-4px;margin:18px 0}.hero h1 span{color:var(--accent)}.hero p{color:var(--muted);font-size:17px;max-width:560px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}.hero-card{border:1px solid #3b422a;background:linear-gradient(145deg,#22271b,#171815 70%);border-radius:28px;padding:25px;min-height:310px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 20px 80px #0004}.hero-card .big{font-size:56px;line-height:1;font-weight:900;letter-spacing:-4px;color:var(--accent)}.mini-label{color:var(--muted);font-size:13px}.orbit{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px}.pill{border:1px solid #45483a;border-radius:99px;padding:7px 11px;color:#e7e8db;font-size:12px}.section{padding:35px 0}.section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:18px}.section h2{font-size:28px;letter-spacing:-1px;margin:4px 0}.section-head p{color:var(--muted);margin:0}.filters{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0}.search{flex:1;min-width:190px}.field{width:100%;background:#11110f;border:1px solid var(--line);border-radius:12px;padding:12px 13px;color:var(--text);outline:none}.field:focus{border-color:#879e50}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.project{border:1px solid var(--line);background:linear-gradient(160deg,#1b1b18,#151513);border-radius:18px;padding:18px;min-height:200px;display:flex;flex-direction:column;gap:10px}.project h3{margin:0;font-size:19px;line-height:1.25}.project p{margin:0;color:var(--muted);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.tag{display:inline-flex;align-self:flex-start;border-radius:8px;padding:5px 8px;background:#2a3020;color:var(--accent);font-size:11px;font-weight:800}.project-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto;padding-top:8px;color:var(--muted);font-size:12px}.empty{grid-column:1/-1;text-align:center;padding:38px 20px;border:1px dashed #424239;border-radius:18px;color:var(--muted)}.status{margin:14px 0;padding:11px 13px;border-radius:12px;background:#22251a;color:#d9ffb1;font-size:13px;display:none;overflow-wrap:anywhere}.status.show{display:block}.status.error{background:#321f1c;color:#ffc0b7}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:22px;min-width:0}.panel h3{margin:0 0 6px;font-size:20px}.panel p{color:var(--muted);margin-top:0}.formgrid{display:grid;gap:11px}.formgrid label{display:grid;gap:6px;color:var(--muted);font-size:13px}.formgrid textarea{min-height:100px;resize:vertical}.auth-row{display:flex;gap:9px;flex-wrap:wrap}.hidden{display:none!important}.footer{border-top:1px solid var(--line);padding:25px 0 40px;color:var(--muted);font-size:13px;margin-top:40px}.foot-inner{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:760px){.wrap{padding:0 15px}.nav{height:62px}.navlinks{gap:10px}.navlinks a{display:none}.hero{grid-template-columns:1fr;padding:48px 0 20px;gap:22px}.hero h1{letter-spacing:-2.5px}.hero-card{min-height:240px}.grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}.nav .btn{padding:8px 11px}.hero-card .big{font-size:48px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap nav">
+<a class="brand" href="#"><span class="logo">S</span> SkillShow</a>
+<nav class="navlinks"><a href="#discover">Discover</a><a href="#create">Post a project</a><a href="#account">Account</a><button id="navAuth" class="btn primary" type="button" onclick="document.querySelector('#account').scrollIntoView({behavior:'smooth'})">Get started</button></nav>
+</div></header>
+<main class="wrap">
+<section class="hero">
+<div><div class="eyebrow">Your skills deserve to be seen</div><h1>Show what you can do.<br><span>Find your people.</span></h1><p>SkillShow brings creative people together to share skills, discover projects, and turn ideas into work that matters.</p><div class="actions"><a class="btn primary" href="#discover" style="text-decoration:none">Explore projects ↗</a><a class="btn" href="#create" style="text-decoration:none">Post an opportunity</a></div><div class="orbit"><span class="pill">Design</span><span class="pill">Writing</span><span class="pill">Photography</span><span class="pill">Video</span><span class="pill">Tech</span><span class="pill">And more</span></div></div>
+<div class="hero-card"><div><div class="mini-label">A creative community for people who do</div><div class="big">Ideas →<br>Impact.</div></div><div><div class="mini-label">Discover talent. Build together. Grow in public.</div><div style="height:7px;background:#383d2d;border-radius:9px;margin-top:16px;overflow:hidden"><div style="width:72%;height:100%;background:var(--accent);border-radius:9px"></div></div></div></div>
+</section>
+<div id="globalStatus" class="status"></div>
+<section id="discover" class="section"><div class="section-head"><div><div class="eyebrow">The community board</div><h2>Discover projects</h2><p>Find an opportunity that fits your skills.</p></div><button class="btn" id="refreshBtn" type="button">↻ Refresh</button></div>
+<div class="filters"><input id="searchInput" class="field search" placeholder="Search projects or skills…" aria-label="Search projects"><select id="categoryFilter" class="field" style="max-width:210px"><option value="">All creative categories</option><option>Design</option><option>Writing</option><option>Photography</option><option>Video &amp; Film</option><option>Technology</option><option>Marketing</option><option>Music &amp; Audio</option><option>Other</option></select></div>
+<div id="projectGrid" class="grid"><div class="empty">Connect Supabase to load real projects.</div></div>
+</section>
+<section id="create" class="section"><div class="section-head"><div><div class="eyebrow">Make something happen</div><h2>Post a project</h2><p>Sign in first to publish a project to SkillShow.</p></div></div>
+<div class="two-col">
+<div class="panel"><h3>Share an opportunity</h3><p>Describe what you're building and who you'd like to collaborate with.</p>
+<form id="projectForm" class="formgrid"><label>Project title<input class="field" id="projectTitle" required maxlength="100" placeholder="e.g. Build a brand identity for a new café"></label><label>Category<select class="field" id="projectCategory" required><option value="">Choose a category</option><option>Design</option><option>Writing</option><option>Photography</option><option>Video &amp; Film</option><option>Technology</option><option>Marketing</option><option>Music &amp; Audio</option><option>Other</option></select></label><label>Description<textarea class="field" id="projectDescription" required maxlength="3000" placeholder="What are you creating? What help do you need?"></textarea></label><button class="btn primary" id="publishBtn" type="submit">Publish project</button></form><div id="projectStatus" class="status"></div></div>
+<div class="panel"><h3>How SkillShow works</h3><p>Simple steps to turn skills into collaboration.</p><div style="display:grid;gap:17px;margin-top:20px"><div><span class="tag">01 · SHOW</span><h3 style="margin-top:8px">Build your profile</h3><p>Tell the community what you do and what you're learning.</p></div><div><span class="tag">02 · DISCOVER</span><h3 style="margin-top:8px">Find your next project</h3><p>Explore opportunities from people building across creative categories.</p></div><div><span class="tag">03 · COLLABORATE</span><h3 style="margin-top:8px">Apply and create</h3><p>Connect with others, contribute your skills, and make something real.</p></div></div></div>
+</div></section>
+<section id="account" class="section"><div class="section-head"><div><div class="eyebrow">Your space</div><h2>Account &amp; sign in</h2><p>Create an account or sign in to publish projects.</p></div></div>
+<div class="two-col">
+<div class="panel"><h3 id="authHeading">Welcome to SkillShow</h3><p id="authDescription">Use your email address. If confirmation is enabled, check your inbox after signing up.</p>
+<form id="authForm" class="formgrid"><label>Email address<input class="field" id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com"></label><label>Password<input class="field" id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters"></label><div class="auth-row"><button class="btn primary" type="submit" id="authSubmit">Create account</button><button class="btn" type="button" id="toggleAuth">I already have an account</button></div></form>
+<div id="authStatus" class="status"></div><div id="signedInPanel" class="hidden" style="margin-top:14px"><p id="signedInText"></p><button class="btn" id="signOutBtn" type="button">Sign out</button></div></div>
+<div class="panel"><h3>Connect your Supabase project</h3><p>Use your project URL and public publishable/anon key. Never put a service-role or secret key in this website.</p>
+<form id="configForm" class="formgrid"><label>Project URL<input class="field" id="supabaseUrl" type="url" placeholder="https://your-project.supabase.co" required></label><label>Publishable key / anon key<input class="field" id="supabaseKey" type="password" placeholder="Paste your public key" required></label><button class="btn primary" type="submit">Connect and load projects</button><button class="btn" type="button" id="disconnectBtn">Clear connection from this browser</button></form><div id="configStatus" class="status"></div></div>
+</div></section>
+</main>
+<footer class="footer"><div class="wrap foot-inner"><span>© 2026 SkillShow · Built for people who create.</span><span>Show your skills. Find your people.</span></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+let supabaseClient=null;
+let isSignUp=true;
+let currentUser=null;
+let allProjects=[];
+const $=id=>document.getElementById(id);
+
+function showStatus(id,message,error=false){
+ const el=$(id);el.textContent=message;el.classList.add('show');el.classList.toggle('error',error);
+}
+function clearStatus(id){const el=$(id);el.textContent='';el.classList.remove('show','error')}
+function safeText(value){return String(value??'')}
+function escapeHTML(value){return safeText(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function renderAuthState(){
+ const signed=!!currentUser;
+ $('signedInPanel').classList.toggle('hidden',!signed);
+ $('authForm').classList.toggle('hidden',signed);
+ $('authDescription').textContent=signed?'You are signed in and can publish projects.':'Use your email address. If confirmation is enabled, check your inbox after signing up.';
+ $('signedInText').textContent=signed?'Signed in as '+(currentUser.email||'your account'):'';
+ $('navAuth').textContent=signed?'Account ready':'Get started';
+}
+
+function renderProjects(){
+ const q=$('searchInput').value.trim().toLowerCase(),cat=$('categoryFilter').value;
+ const filtered=allProjects.filter(p=>(!cat||p.category===cat)&&(!q||[p.title,p.description,p.category].some(v=>safeText(v).toLowerCase().includes(q))));
+ const grid=$('projectGrid');
+ if(!filtered.length){grid.innerHTML='<div class="empty">'+(supabaseClient?'No matching projects yet. Be the first to post one.':'Connect Supabase below to load live projects.')+'</div>';return}
+ grid.innerHTML=filtered.map(p=>`<article class="project"><span class="tag">${escapeHTML(p.category||'Other')}</span><h3>${escapeHTML(p.title)}</h3><p>${escapeHTML(p.description||'No description provided.')}</p><div class="project-foot"><span>${escapeHTML(p.status||'open').replace('_',' ')}</span><span>${p.created_at?new Date(p.created_at).toLocaleDateString():'SkillShow'}</span></div></article>`).join('');
+}
+
+async function loadProjects(){
+ if(!supabaseClient){renderProjects();return}
+ try{
+  const {data,error}=await supabaseClient.from('projects').select('id,title,description,category,status,created_at').eq('is_public',true).order('created_at',{ascending:false}).limit(50);
+  if(error)throw error;
+  allProjects=data||[];renderProjects();
+  showStatus('configStatus','Connected to Supabase. Loaded '+allProjects.length+' project(s).');
+ }catch(e){allProjects=[];renderProjects();showStatus('configStatus','Could not load projects: '+e.message+'. Check your SELECT policy.',true)}
+}
+
+function initSupabase(url,key,save=true){
+ if(!window.supabase||!window.supabase.createClient){showStatus('configStatus','Could not load the Supabase library. Check your internet connection and try again.',true);return}
+ try{
+  if(save){localStorage.setItem('skillshow_supabase_url',url);localStorage.setItem('skillshow_supabase_key',key)}
+  supabaseClient=window.supabase.createClient(url,key);
+  showStatus('configStatus','Supabase configured. Checking your session and loading projects…');
+  supabaseClient.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;renderAuthState()});
+  supabaseClient.auth.getSession().then(({data,error})=>{
+   if(error){showStatus('configStatus',error.message,true);return}
+   currentUser=data?.session?.user||null;renderAuthState();loadProjects();
+  }).catch(e=>showStatus('configStatus',e.message,true));
+ }catch(e){showStatus('configStatus','Could not connect: '+e.message,true)}
+}
+
+function restoreConfig(){
+ const url=localStorage.getItem('skillshow_supabase_url');
+ const key=localStorage.getItem('skillshow_supabase_key');
+ if(url&&key){$('supabaseUrl').value=url;$('supabaseKey').value=key;initSupabase(url,key,false)}
+}
+
+$('configForm').addEventListener('submit',e=>{
+ e.preventDefault();clearStatus('configStatus');
+ const url=$('supabaseUrl').value.trim().replace(/\/+$/,'');
+ const key=$('supabaseKey').value.trim();
+ if(!/^https:\/\/.+\.supabase\.co$/.test(url)){showStatus('configStatus','Enter the project URL shown in Supabase settings.',true);return}
+ if(!key){showStatus('configStatus','Paste your public publishable/anon key.',true);return}
+ initSupabase(url,key,true);
+});
+
+$('disconnectBtn').addEventListener('click',()=>{
+ localStorage.removeItem('skillshow_supabase_url');localStorage.removeItem('skillshow_supabase_key');
+ if(supabaseClient)supabaseClient.auth.signOut().catch(()=>{});
+ supabaseClient=null;currentUser=null;allProjects=[];
+ $('supabaseUrl').value='';$('supabaseKey').value='';
+ renderProjects();renderAuthState();showStatus('configStatus','Connection details cleared from this browser.');
+});
+
+$('toggleAuth').addEventListener('click',()=>{
+ isSignUp=!isSignUp;
+ $('authHeading').textContent=isSignUp?'Welcome to SkillShow':'Welcome back';
+ $('authSubmit').textContent=isSignUp?'Create account':'Sign in';
+ $('toggleAuth').textContent=isSignUp?'I already have an account':'I need to create an account';
+ $('authPassword').autocomplete=isSignUp?'new-password':'current-password';
+ clearStatus('authStatus');
+});
+
+$('authForm').addEventListener('submit',async e=>{
+ e.preventDefault();clearStatus('authStatus');
+ if(!supabaseClient){showStatus('authStatus','Connect Supabase first in the panel below.',true);return}
+ const email=$('authEmail').value.trim(),password=$('authPassword').value,btn=$('authSubmit');
+ btn.disabled=true;
+ try{
+  if(isSignUp){
+   const {data,error}=await supabaseClient.auth.signUp({email,password});
+   if(error)throw error;
+   if(data.session){currentUser=data.user;renderAuthState();showStatus('authStatus','Account created and signed in.')}
+   else showStatus('authStatus','Signup started. Check your email for a confirmation link, then sign in.');
+  }else{
+   const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+   if(error)throw error;
+   currentUser=data.user;renderAuthState();showStatus('authStatus','You are signed in successfully.');
+  }
+ }catch(err){showStatus('authStatus',err.message||'Authentication failed.',true)}
+ finally{btn.disabled=false}
+});
+
+$('signOutBtn').addEventListener('click',async()=>{
+ if(!supabaseClient)return;
+ const {error}=await supabaseClient.auth.signOut();
+ if(error)showStatus('authStatus',error.message,true);
+ else{currentUser=null;renderAuthState();showStatus('authStatus','You have signed out.')}
+});
+
+$('projectForm').addEventListener('submit',async e=>{
+ e.preventDefault();clearStatus('projectStatus');
+ if(!supabaseClient){showStatus('projectStatus','Connect Supabase first in the Account section.',true);return}
+ if(!currentUser){showStatus('projectStatus','Please create an account or sign in before publishing.',true);$('account').scrollIntoView({behavior:'smooth'});return}
+ const row={
+  user_id:currentUser.id,
+  title:$('projectTitle').value.trim(),
+  description:$('projectDescription').value.trim(),
+  category:$('projectCategory').value,
+  is_public:true,
+  status:'published'
+ };
+ const btn=$('publishBtn');btn.disabled=true;
+ try{
+  const {error}=await supabaseClient.from('projects').insert(row);
+  if(error)throw error;
+  $('projectForm').reset();
+  showStatus('projectStatus','Project published successfully!');
+  await loadProjects();
+  $('discover').scrollIntoView({behavior:'smooth'});
+ }catch(err){
+  showStatus('projectStatus','Could not publish: '+err.message+'. Check your projects INSERT policy and required columns.',true);
+ }finally{btn.disabled=false}
+});
+
+$('searchInput').addEventListener('input',renderProjects);
+$('categoryFilter').addEventListener('change',renderProjects);
+$('refreshBtn').addEventListener('click',loadProjects);
+renderProjects();renderAuthState();restoreConfig();
+</script>
+</body>
+</html>
