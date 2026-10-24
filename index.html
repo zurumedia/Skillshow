@@ -29,6 +29,22 @@ h1{font-size:26px;letter-spacing:-.6px;line-height:1.2}p{color:var(--mu);line-he
 .row{display:flex;gap:8px}.cd{margin:14px;border:1px solid var(--ln);border-radius:12px;padding:16px}.cd h3{margin-bottom:6px}
 nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:flex;background:var(--bg);border-top:1px solid var(--ln);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px))}
 nav span{flex:1;display:flex;justify-content:center;color:var(--mu);cursor:pointer}nav .on{color:var(--tx)}
+#feed,#mine{padding-bottom:72px}.co{color:var(--mu)}
+.post{border-bottom:1px solid var(--ln);padding-bottom:10px}
+.ph{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--so);color:var(--pr);display:flex;align-items:center;justify-content:center;font-weight:700;overflow:hidden;flex:0 0 auto}.av img{width:100%;height:100%;object-fit:cover}
+.ph b{display:block;font-size:13.5px}.ph small{color:var(--mu);font-size:12px}
+.fl{margin-left:auto;border:0;background:none;color:var(--ac);font-weight:700;font-size:13px}
+.md{position:relative;background:#000}.md img,.md video{width:100%;display:block;max-height:560px;object-fit:cover}
+.wmk{position:absolute;right:12px;top:12px;color:#fff;font-size:13px;font-weight:800;opacity:.55;pointer-events:none;letter-spacing:-.4px}
+.ac{display:flex;gap:16px;padding:10px 14px 4px}.ac span{cursor:pointer;display:flex}
+.cap{padding:0 14px;line-height:1.4}.m{color:var(--mu);font-size:13px;display:block;margin-top:2px;cursor:pointer}
+.cm{padding:6px 14px 0;font-size:13px}.cm p{margin:3px 0}.cin{display:flex;gap:8px;align-items:center;margin-top:6px}.cin .fi{flex:1;width:auto}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}.grid div{aspect-ratio:1/1;background:var(--so);overflow:hidden;position:relative;font-size:11px;color:var(--mu);padding:6px}.grid img,.grid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cnt{display:flex;gap:26px;margin-bottom:12px}.cnt div{color:var(--mu);font-size:12px}.cnt b{display:block;font-size:17px;color:var(--tx)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;z-index:6}
+.sh{background:var(--bg);width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto}.sh h3{margin-bottom:10px}
+.up{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed var(--ln);border-radius:12px;min-height:110px;color:var(--mu);cursor:pointer;overflow:hidden}.up img,.up video{width:100%;max-height:260px;object-fit:cover}
 .toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:9;max-width:90%;text-align:center}.toast.show{opacity:1}
 </style>
 </head>
@@ -45,7 +61,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const CAM='<svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>';
 const HOME='<svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>';
 const USER='<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>';
-let step='boot',me=null,prof=null,em='',tab='home',tp={},wait=0,busy=false;
+let step='boot',me=null,prof=null,em='',tab='home',tp={},wait=0,busy=false,feed=[],following=new Set(),cdata={},np={file:null,kind:''};
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2600)}
 function nice(e){return (e&&(e.status===429||/rate|seconds/i.test(e.message||'')))?'Too many attempts. Please wait a minute and try again.':(e&&e.message)||'Something went wrong'}
 function lock(on){busy=on;document.querySelectorAll('.btn').forEach(b=>b.disabled=on)}
@@ -109,6 +125,86 @@ async function save(){
 }
 function edit(){tp={name:prof.full_name,user:prof.username,bio:prof.bio||''};step='setup';draw()}
 async function out(){await sb.auth.signOut();me=null;prof=null;em='';step='welcome';draw()}
+const HRT=f=>`<svg class="i" viewBox="0 0 24 24" style="${f?'fill:#ED4956;stroke:#ED4956':''}"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/></svg>`;
+const CMT='<svg class="i" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg>';
+const SND='<svg class="i" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>';
+const PLS='<svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>';
+const ago=t=>{const s=(Date.now()-new Date(t))/1000;return s<60?'now':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d'};
+const avt=(u,n)=>u?`<img src="${esc(u)}" alt="">`:esc((n||'?')[0]);
+function cHtml(id){return `<div class="cm">${cdata[id].map(c=>`<p><b>${esc(c.profiles&&c.profiles.username)}</b> ${esc(c.body)}</p>`).join('')}<div class="cin"><input class="fi" id="ci${id}" placeholder="Add a comment" maxlength="500"><button class="lk" onclick="addC(${id})">Post</button></div></div>`}
+function postH(p){
+ const pr=p.profiles||{},liked=p.likes.some(l=>l.user_id==me.id),n=p.likes.length,cn=(p.comments[0]||{}).count||0,mine=p.user_id==me.id;
+ return `<article class="post"><div class="ph"><div class="av">${avt(pr.avatar_url,pr.full_name)}</div><div><b>${esc(pr.full_name)}</b><small>@${esc(pr.username)} · ${ago(p.created_at)}</small></div>${mine?`<button class="fl" onclick="delPost(${p.id})">Delete</button>`:`<button class="fl" onclick="toggleFol('${p.user_id}')">${following.has(p.user_id)?'Following':'Follow'}</button>`}</div>
+${p.media_url?`<div class="md">${p.media_type=='video'?`<video src="${esc(p.media_url)}" controls playsinline preload="metadata"></video>`:`<img src="${esc(p.media_url)}" alt="" loading="lazy">`}<span class="wmk">Skillshow</span></div>`:''}
+<div class="ac"><span onclick="like(${p.id})">${HRT(liked)}</span><span onclick="openC(${p.id})">${CMT}</span><span onclick="share()">${SND}</span></div>
+<div class="cap"><b>${n} like${n==1?'':'s'}</b>${p.caption?`<br><b>${esc(pr.username)}</b> ${esc(p.caption)}`:''}${cn?`<span class="m" onclick="openC(${p.id})">View all ${cn} comment${cn==1?'':'s'}</span>`:''}</div>${cdata[p.id]?cHtml(p.id):''}</article>`}
+function drawFeed(){const f=$('#feed');if(!f)return;f.innerHTML=`<div style="text-align:right;padding:2px 10px"><button class="lk" onclick="loadFeed()">Refresh</button></div>`+(feed.length?feed.map(postH).join(''):`<p class="co" style="padding:30px 20px;text-align:center">No posts yet. Be the first. Tap the + button to share your skill.</p>`)}
+async function loadFeed(){
+ const [a,b]=await Promise.all([sb.from('posts').select('id,user_id,caption,media_url,media_type,created_at,profiles(username,full_name,avatar_url),likes(user_id),comments(count)').order('created_at',{ascending:false}).limit(30),sb.from('follows').select('following_id').eq('follower_id',me.id)]);
+ if(a.error){toast('Could not load the feed: '+a.error.message);return}
+ feed=a.data;following=new Set((b.data||[]).map(x=>x.following_id));drawFeed();
+}
+async function like(id){
+ const p=feed.find(x=>x.id==id),l=p.likes.some(x=>x.user_id==me.id);
+ p.likes=l?p.likes.filter(x=>x.user_id!=me.id):p.likes.concat({user_id:me.id});drawFeed();
+ const {error}=l?await sb.from('likes').delete().eq('post_id',id).eq('user_id',me.id):await sb.from('likes').insert({post_id:id,user_id:me.id});
+ if(error){toast(error.message);loadFeed()}
+}
+async function getC(id){const {data}=await sb.from('comments').select('id,body,profiles(username)').eq('post_id',id).order('created_at');return data||[]}
+async function openC(id){if(cdata[id]){delete cdata[id];drawFeed();return}cdata[id]=await getC(id);drawFeed();const e=$('#ci'+id);if(e)e.focus()}
+async function addC(id){
+ const e=$('#ci'+id),t=e.value.trim();if(!t)return;
+ const {error}=await sb.from('comments').insert({post_id:id,user_id:me.id,body:t});
+ if(error){toast(error.message);return}
+ cdata[id]=await getC(id);feed.find(x=>x.id==id).comments=[{count:cdata[id].length}];drawFeed();
+}
+async function delPost(id){
+ if(!confirm('Delete this post?'))return;
+ const p=feed.find(x=>x.id==id),{error}=await sb.from('posts').delete().eq('id',id);
+ if(error){toast(error.message);return}
+ const k=p.media_url&&p.media_url.split('/object/public/posts/')[1];if(k)sb.storage.from('posts').remove([decodeURIComponent(k)]);
+ feed=feed.filter(x=>x.id!=id);drawFeed();toast('Post deleted');
+}
+async function toggleFol(uid){
+ const on=following.has(uid);on?following.delete(uid):following.add(uid);drawFeed();
+ const {error}=on?await sb.from('follows').delete().eq('follower_id',me.id).eq('following_id',uid):await sb.from('follows').insert({follower_id:me.id,following_id:uid});
+ if(error){toast(error.message);loadFeed()}
+}
+function share(){const u=location.href;if(navigator.share)navigator.share({title:'Skillshow',url:u}).catch(()=>{});else if(navigator.clipboard){navigator.clipboard.writeText(u);toast('Link copied')}}
+function openNew(){
+ np={file:null,kind:''};
+ const o=document.createElement('div');o.id='ov';o.className='ov';o.onclick=e=>{if(e.target==o)closeNew()};
+ o.innerHTML=`<div class="sh"><h3>New post</h3><input type="file" id="fm" accept="image/*,video/*" hidden onchange="pickM(this)"><div class="up" id="upl" onclick="$('#fm').click()">${CAM} Add a photo or video</div><textarea class="fi" id="nt" rows="3" maxlength="1000" placeholder="Describe your work" style="margin:10px 0"></textarea><button class="btn" onclick="sendPost()">Share</button></div>`;
+ document.body.appendChild(o);
+}
+function closeNew(){const o=$('#ov');if(o)o.remove()}
+function pickM(inp){
+ const f=inp.files[0];if(!f)return;
+ const v=f.type.startsWith('video/'),i=f.type.startsWith('image/');
+ if(!v&&!i){toast('Please choose a photo or video');return}
+ if(f.size>(v?50:10)*1024*1024){toast(v?'Video is too large (max 50 MB)':'Photo is too large (max 10 MB)');return}
+ np={file:f,kind:v?'video':'image'};const u=URL.createObjectURL(f),b=$('#upl');
+ b.onclick=null;b.innerHTML=`<div style="width:100%">${v?`<video src="${u}" controls playsinline></video>`:`<img src="${u}" alt="">`}<button class="lk" onclick="$('#fm').click()">Change</button></div>`;
+}
+async function sendPost(){
+ if(busy)return;
+ const cap=$('#nt').value.trim();
+ if(!cap&&!np.file){toast('Add a photo, a video or a caption');return}
+ lock(true);
+ try{
+  let url=null,kind=null;
+  if(np.file){url=await up('posts',np.file);kind=np.kind}
+  const {error}=await sb.from('posts').insert({user_id:me.id,caption:cap,media_url:url,media_type:kind});
+  if(error)throw error;
+  lock(false);closeNew();toast('Posted');tab='home';draw();
+ }catch(e){lock(false);toast('Could not post: '+(e.message||e))}
+}
+async function loadMine(){
+ const [a,f1,f2]=await Promise.all([sb.from('posts').select('id,caption,media_url,media_type').eq('user_id',me.id).order('created_at',{ascending:false}),sb.from('follows').select('*',{count:'exact',head:true}).eq('following_id',me.id),sb.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',me.id)]);
+ const g=$('#mine');if(!g)return;const d=a.data||[];
+ $('#pc').textContent=d.length;$('#fl1').textContent=f1.count||0;$('#fl2').textContent=f2.count||0;
+ g.innerHTML=d.length?`<div class="grid">${d.map(p=>`<div>${p.media_url?(p.media_type=='video'?`<video src="${esc(p.media_url)}" muted playsinline preload="metadata"></video>`:`<img src="${esc(p.media_url)}" alt="" loading="lazy">`):esc((p.caption||'').slice(0,60))}</div>`).join('')}</div>`:`<p class="co" style="text-align:center;padding:24px">Share your first photo or video with the + button.</p>`;
+}
 const V={
 boot:()=>`<div class="w" style="margin-top:80px;text-align:center"><div class="wm">Skillshow<b></b></div></div>`,
 welcome:()=>`<div class="w"><div class="wm" style="margin-top:30px">Skillshow<b></b></div><h1>Show your skill. Get hired.</h1><p>Join designers, developers, editors and learners. Enter your email and we will send you a code. New here or coming back, it is the same step.</p><div class="lbl">Email address</div><input class="fi" id="em" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" value="${esc(em)}"><button class="btn" onclick="sendCode()">Continue</button></div>`,
@@ -118,21 +214,4 @@ setup:()=>{const av=tp.avatarPrev||(prof&&prof.avatar_url),cv=tp.coverPrev||(pro
 <div class="cvu" style="${cv?`background-image:url('${esc(cv)}')`:''}" onclick="$('#fc').click()">${cv?'':CAM+'Add cover photo'}</div>
 <div class="dpu" onclick="$('#fa').click()">${av?`<img src="${esc(av)}" alt="">`:CAM}</div>
 <div class="lbl">Full name</div><input class="fi" value="${esc(tp.name)}" oninput="tp.name=this.value" placeholder="Your name" maxlength="60">
-<div class="lbl">Username</div><input class="fi" value="${esc(tp.user)}" oninput="tp.user=this.value.toLowerCase().replace(/[^a-z0-9._]/g,'');this.value=tp.user" placeholder="username" maxlength="20" autocapitalize="none" autocorrect="off">
-<div class="lbl">Bio</div><textarea class="fi" rows="3" maxlength="150" oninput="tp.bio=this.value" placeholder="What do you do? Tell people in a line or two.">${esc(tp.bio)}</textarea>
-<button class="btn" onclick="save()">${prof?'Save changes':'Finish and start'}</button>${prof?`<button class="lk" onclick="step='app';draw()">Cancel</button>`:''}</div>`},
-app:()=>{
- const hd=`<div class="hd"><div class="wm">Skillshow<b></b></div></div>`;
- const nv=`<nav><span class="${tab=='home'?'on':''}" onclick="tab='home';draw()">${HOME}</span><span class="${tab=='profile'?'on':''}" onclick="tab='profile';draw()">${USER}</span></nav>`;
- if(tab=='home')return hd+`<div class="cd"><h3>Welcome, ${esc(prof.full_name)}</h3><p>Your account is live. The feed, communities, jobs and courses are coming in the next steps.</p></div>`+nv;
- return hd+`<div class="cov" style="${prof.cover_url?`background-image:url('${esc(prof.cover_url)}')`:''}"></div><div class="pf"><div class="dp">${prof.avatar_url?`<img src="${esc(prof.avatar_url)}" alt="">`:esc(prof.full_name[0]||'?')}</div><div class="pn"><b>${esc(prof.full_name)}</b><small>@${esc(prof.username)}</small></div><p class="bio">${esc(prof.bio)||'No bio yet.'}</p><div class="row"><button class="btn o" onclick="edit()">Edit profile</button><button class="btn o" onclick="out()">Sign out</button></div></div>`+nv}
-};
-function draw(){$('#app').innerHTML=V[step]();window.scrollTo(0,0)}
-(async()=>{
- draw();
- const {data}=await sb.auth.getSession();
- if(data.session){me=data.session.user;await enter()}else{step='welcome';draw()}
-})();
-</script>
-</body>
-</html>
+<div class="lbl">Username</div><input class="fi" value="${esc(tp.user)}" oninput="tp.user=this.value.t
