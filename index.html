@@ -938,5 +938,15 @@ function draw(){$('#app').innerHTML=V[step]();window.scrollTo(0,0);if(step=='app
  if(data.session){me=data.session.user;await enter()}else{step='welcome';draw()}
 })();
 </script>
+ 
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .catch(error => console.error('Service worker registration failed:', error));
+  });
+}
+</script>
+ 
 </body>
 </html>
