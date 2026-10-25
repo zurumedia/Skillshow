@@ -1,0 +1,22 @@
+SKILLSHOW — ANDROID INSTALLABLE WEBSITE PACKAGE
+
+What this does:
+- Adds Progressive Web App (PWA) install support.
+- Uses SkillShow's existing burgundy (#5B1424) and gold (#C8963E) branding.
+- Keeps the existing HTML, Supabase URL, publishable key, and application code.
+- Does not run SQL migrations or change the database.
+
+Files:
+- index.html: updated website
+- manifest.webmanifest: Android app name, icon and display settings
+- sw.js: service worker for app-shell caching
+- icons/: app icons
+
+Important:
+This is an installable web app (PWA), not a standalone APK. It must be deployed over HTTPS.
+Upload/replace these files in the SAME folder/path where the current index.html is hosted.
+If your GitHub Pages site is hosted from a repository subfolder, keep all files together in that same published folder.
+Then open the live HTTPS website in Chrome on Android, open Chrome's menu (⋮), and choose "Install app" or "Add to Home screen" if shown.
+Do not delete the existing Supabase project or run any database migration for this step.
+
+The offline shell may open, but sign-in, feeds, chat, jobs and other Supabase-backed features still require internet.
