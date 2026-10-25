@@ -3,9 +3,9 @@ const SHELL_FILES = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icons/skillshow-192.png',
-  './icons/skillshow-512.png',
-  './icons/skillshow-512-maskable.png'
+  './skillshow-192.png',
+  './skillshow-512.png',
+  './skillshow-512-maskable.png'
 ];
 
 self.addEventListener('install', event => {
