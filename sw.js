@@ -1,59 +1,38 @@
-const CACHE_NAME = 'skillshow-shell-v1';
-const SHELL_FILES = [
-  './',
-  './index.html',
-  './manifest.webmanifest',
-  './skillshow-192.png',
-  './skillshow-512.png',
-  './skillshow-512-maskable.png'
-];
+const V = 'skillshow-v2';
+const SHELL = ['./', './index.html', './manifest.webmanifest', './skillshow-192.png', './skillshow-512.png'];
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(SHELL_FILES))
-      .then(() => self.skipWaiting())
-  );
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(V).then(c => c.addAll(SHELL).catch(() => {})).then(() => self.skipWaiting()));
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
+self.addEventListener('activate', e => {
+  e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+      .then(keys => Promise.all(keys.filter(k => k !== V).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET') return;
-
-  const url = new URL(request.url);
-  // Leave Supabase, CDN, media and other external requests to the network.
-  if (url.origin !== self.location.origin) return;
-
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
-          return response;
-        })
-        .catch(async () => (await caches.match(request)) || (await caches.match('./index.html'))
+self.addEventListener('fetch', e => {
+  const r = e.request;
+  if (r.method !== 'GET') return;
+  const u = new URL(r.url);
+  if (u.origin === location.origin) {
+    const fresh = fetch(r).then(res => {
+      if (res && res.ok) { const copy = res.clone(); caches.open(V).then(c => c.put(r, copy)); }
+      return res;
+    });
+    const slow = new Promise(res => setTimeout(() => res(null), 2500));
+    e.respondWith(
+      Promise.race([fresh, slow])
+        .then(res => res || caches.match(r).then(m => m || fresh))
+        .catch(() => caches.match(r).then(m => m || caches.match('./index.html')))
     );
     return;
   }
-
-  if (SHELL_FILES.some(file => url.pathname.endsWith(file.replace('./', '/')))) {
-    event.respondWith(
-      fetch(request).then(response => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-        }
-        return response;
-      }).catch(() => caches.match(request))
-    );
+  if (u.hostname === 'cdn.jsdelivr.net') {
+    e.respondWith(caches.match(r).then(m => m || fetch(r).then(res => {
+      const copy = res.clone(); caches.open(V).then(c => c.put(r, copy)); return res;
+    })));
   }
 });
