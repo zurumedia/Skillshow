@@ -1006,7 +1006,6 @@ function draw(){$('#app').innerHTML=V[step]();window.scrollTo(0,0);fabUpd();if(s
  if(data.session){me=data.session.user;await enter()}else{step='welcome';draw()}
 })();
 if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(g=>g.update()).catch(()=>{})});
-</script>
  window.SkillshowBridge = {
   get sb() { return sb; },
   get me() { return me; },
@@ -1026,6 +1025,7 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
     draw();
   }
 };
+ </script>
  <script src="skillshow-patch.js"></script>
  <script src="skillshow-comments.js"></script>
 </body>
