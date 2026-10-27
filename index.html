@@ -1007,6 +1007,26 @@ function draw(){$('#app').innerHTML=V[step]();window.scrollTo(0,0);fabUpd();if(s
 })();
 if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(g=>g.update()).catch(()=>{})});
 </script>
+ window.SkillshowBridge = {
+  get sb() { return sb; },
+  get me() { return me; },
+  get prof() { return prof; },
+  get feed() { return feed; },
+  get cdata() { return cdata; },
+  drawFeed,
+  loadFeed,
+  draw,
+  toast,
+  esc,
+  avt,
+  ago,
+  setTab(value) {
+    tab = value;
+    step = 'app';
+    draw();
+  }
+};
  <script src="skillshow-patch.js"></script>
+ <script src="skillshow-comments.js"></script>
 </body>
 </html>
