@@ -1079,9 +1079,9 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
           );
         }
 
-        if (!VAPID_PUBLIC_KEY ||
-            VAPID_PUBLIC_KEY === 'BFd9hYHVR7mTl_bQ8bIzMorG-aj1SgkMB0Qv8m3ILxWttEWDnjAzGw_BvOiDquiJe0B9Lvap23VhmIUsVKzGDxI') {
-          throw new Error('Add your VAPID PUBLIC KEY first');
+        if (!VAPID_PUBLIC_KEY || VAPID_PUBLIC_KEY.includes('BFd9hYHVR7mTl_bQ8bIzMorG-aj1SgkMB0Qv8m3ILxWttEWDnjAzGw_BvOiDquiJe0B9Lvap23VhmIUsVKzGDxI')) {
+    alert('Add your VAPID public key in index.html.');
+    return;
         }
 
         const bridge = window.SkillShowBridge;
