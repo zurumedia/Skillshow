@@ -241,7 +241,23 @@ function start() {
   // do not repeatedly run inbox enhancement.
   let enhanceTimer = null;
 
-  const pageObserver = new MutationObserver(function () {
+    const pageObserver = new MutationObserver(function () {
+    const liveList = document.getElementById("clistm");
+    const toolbar = document.getElementById(TOOLBAR_ID);
+
+    // Ignore ordinary inbox updates, including the chat count.
+    // Re-enhance only if the list or toolbar needs attention.
+    if (
+      !liveList ||
+      (
+        liveList === currentList &&
+        toolbar &&
+        toolbar.nextElementSibling === liveList
+      )
+    ) {
+      return;
+    }
+
     if (enhanceTimer !== null) {
       clearTimeout(enhanceTimer);
     }
@@ -256,10 +272,4 @@ function start() {
     childList: true,
     subtree: true
   });
-
-  // Expose a small manual refresh hook.
-  window.SkillShowMessages = {
-    refresh: enhanceInbox
-  };
-}
    
