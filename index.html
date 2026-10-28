@@ -1034,7 +1034,7 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
  
 <script>
 (() => {
-  const VAPID_PUBLIC_KEY = 'PASTE_YOUR_PUBLIC_KEY_HERE';
+  const VAPID_PUBLIC_KEY = 'BFd9hYHVR7mTl_bQ8bIzMorG-aj1SgkMB0Qv8m3ILxWttEWDnjAzGw_BvOiDquiJe0B9Lvap23VhmIUsVKzGDxI';
 
   function decodeKey(value) {
     const base64 = value
@@ -1080,7 +1080,7 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
         }
 
         if (!VAPID_PUBLIC_KEY ||
-            VAPID_PUBLIC_KEY === 'PASTE_YOUR_PUBLIC_KEY_HERE') {
+            VAPID_PUBLIC_KEY === 'BFd9hYHVR7mTl_bQ8bIzMorG-aj1SgkMB0Qv8m3ILxWttEWDnjAzGw_BvOiDquiJe0B9Lvap23VhmIUsVKzGDxI') {
           throw new Error('Add your public VAPID key to the script first.');
         }
 
