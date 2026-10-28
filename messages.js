@@ -233,29 +233,33 @@
     applyFilters();
   }
 
-  function start() {
-    enhanceInbox();
+  
+function start() {
+  enhanceInbox();
 
-    // The existing app redraws screens dynamically.
-    // Watch for the Messages screen to appear again.
-    const pageObserver = new MutationObserver(enhanceInbox);
+  // Debounce page changes so repeated screen updates
+  // do not repeatedly run inbox enhancement.
+  let enhanceTimer = null;
 
-    pageObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+  const pageObserver = new MutationObserver(function () {
+    if (enhanceTimer !== null) {
+      clearTimeout(enhanceTimer);
+    }
 
-    // Expose a small manual refresh hook.
-    window.SkillShowMessages = {
-      refresh: enhanceInbox
-    };
-  }
+    enhanceTimer = setTimeout(function () {
+      enhanceTimer = null;
+      enhanceInbox();
+    }, 150);
+  });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start, {
-      once: true
-    });
-  } else {
-    start();
-  }
-})();
+  pageObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  // Expose a small manual refresh hook.
+  window.SkillShowMessages = {
+    refresh: enhanceInbox
+  };
+}
+   
