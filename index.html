@@ -1034,7 +1034,7 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
  
 <script>
 (() => {
-  const VAPID_PUBLIC_KEY = 'BFd9hYHVR7mTl_bQ8bIzMorG-aj1SgkMB0Qv8m3ILxWttEWDnjAzGw_BvOiDquiJe0B9Lvap23VhmIUsVKzGDxI';
+  const VAPID_PUBLIC_KEY = '2755d6cb0506c3e249f5080c8769c92da6d1f3dbca5d3f834e12a5f0a06ab830';
 
   function decodeKey(value) {
     const base64 = value
@@ -1079,7 +1079,7 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
           );
         }
 
-        if (!VAPID_PUBLIC_KEY || VAPID_PUBLIC_KEY.includes('BFd9hYHVR7mTl_bQ8bIzMorG-aj1SgkMB0Qv8m3ILxWttEWDnjAzGw_BvOiDquiJe0B9Lvap23VhmIUsVKzGDxI')) {
+        if (!VAPID_PUBLIC_KEY || VAPID_PUBLIC_KEY.includes('2755d6cb0506c3e249f5080c8769c92da6d1f3dbca5d3f834e12a5f0a06ab830')) {
     alert('Add your VAPID public key in index.html.');
     return;
         }
