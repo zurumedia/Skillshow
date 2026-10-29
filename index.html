@@ -212,7 +212,21 @@ if(waRaw&&(wa.length<8||wa.length>15)){
 }
 const row={id:me.id,username:u,full_name:n,bio:tp.bio.trim(),avatar_url:av,cover_url:cv,headline:(tp.headline||'').trim().slice(0,80),skills:parseSkills(tp.skills),open_to_work:!!tp.open,whatsapp_number:wa||null};
   
-function edit(){tp={name:prof.full_name,user:prof.username,bio:prof.bio||'',headline:prof.headline||'',skills:(prof.skills||[]).join(', '),open:!!prof.open_to_work};step='setup';draw()}
+
+function edit(){
+ tp={
+  name:prof.full_name,
+  user:prof.username,
+  bio:prof.bio||'',
+  headline:prof.headline||'',
+  skills:(prof.skills||[]).join(', '),
+  open:!!prof.open_to_work,
+  whatsapp:prof.whatsapp_number||''
+ };
+ step='setup';
+ draw();
+ }
+           
 async function out(){sb.removeAllChannels();rt=null;pres=null;online=new Set();jcLoaded=false;await sb.auth.signOut();me=null;prof=null;em='';mode='login';step='welcome';draw()}
 const HRT=f=>`<svg class="i" viewBox="0 0 24 24" style="${f?'fill:#ED4956;stroke:#ED4956':''}"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/></svg>`;
 const CMT='<svg class="i" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg>';
