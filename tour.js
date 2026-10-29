@@ -130,3 +130,270 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", auto);
   else auto();
 })();
+
+
+/* =====================================================
+   SKILLSHOW — CLAUDE STYLE APP TOUR
+   File: tour.js
+   ===================================================== */
+
+(function () {
+  if (window.__skillshowTourLoaded) return;
+  window.__skillshowTourLoaded = true;
+
+  const steps = [
+    {
+      title: "Welcome to SkillShow",
+      text: "Your creative journey starts here. Discover opportunities, connect with talented people and showcase what you can do.",
+      target: null
+    },
+    {
+      title: "Your Home Feed",
+      text: "Explore posts, updates, creative work and opportunities shared by the SkillShow community.",
+      target: "#feed, #home, [data-tab='feed']"
+    },
+    {
+      title: "Discover Opportunities",
+      text: "Find jobs, internships, freelance projects and other opportunities that match your skills.",
+      target: "#jobs, [data-tab='jobs']"
+    },
+    {
+      title: "Create Something",
+      text: "Share your work, publish updates, upload media and let the community discover your creativity.",
+      target: "#create, [data-tab='create']"
+    },
+    {
+      title: "Join Communities",
+      text: "Discover communities, connect with people who share your interests and build meaningful relationships.",
+      target: "#communities, [data-tab='communities']"
+    },
+    {
+      title: "Your Messages",
+      text: "Connect and communicate with other creators, clients and members of SkillShow.",
+      target: "#messages, [data-tab='messages']"
+    },
+    {
+      title: "Discover People",
+      text: "Find creators, professionals and businesses to follow and connect with.",
+      target: "#search, [data-tab='search']"
+    },
+    {
+      title: "Stay Updated",
+      text: "Keep track of important activities, interactions and updates through your notifications.",
+      target: "#notifications, [data-tab='notifications']"
+    },
+    {
+      title: "Your Profile",
+      text: "Showcase your identity, skills, portfolio and professional experience. Let people know what you bring to the table.",
+      target: "#profile, [data-tab='profile']"
+    },
+    {
+      title: "You're Ready!",
+      text: "That's your introduction to SkillShow. Start exploring, sharing your creativity and discovering opportunities. Welcome aboard!",
+      target: null
+    }
+  ];
+
+  let current = 0;
+  let active = false;
+
+  const css = `
+    #ss-tour-overlay {
+      position:fixed; inset:0; z-index:999999;
+      background:rgba(4,10,24,.78);
+      display:none; pointer-events:auto;
+    }
+    #ss-tour-spot {
+      position:fixed; display:none; z-index:1000000;
+      border:2px solid #C9A86A;
+      border-radius:13px;
+      box-shadow:0 0 0 9999px rgba(4,10,24,.72),
+                 0 0 25px rgba(201,168,106,.35);
+      pointer-events:none;
+      transition:all .25s ease;
+    }
+    #ss-tour-card {
+      position:fixed; z-index:1000001;
+      left:50%; bottom:25px;
+      transform:translateX(-50%);
+      width:calc(100% - 32px);
+      max-width:390px;
+      background:#152642;
+      color:#fff;
+      border:1px solid rgba(201,168,106,.35);
+      border-radius:19px;
+      padding:22px;
+      box-sizing:border-box;
+      box-shadow:0 15px 55px rgba(0,0,0,.4);
+      font-family:Inter,Arial,sans-serif;
+    }
+    #ss-tour-card h3 {
+      margin:0 0 10px;
+      font-size:20px;
+      color:#C9A86A;
+    }
+    #ss-tour-card p {
+      font-size:14px;
+      line-height:1.65;
+      color:#DCE4F0;
+      margin:0 0 20px;
+    }
+    #ss-tour-progress {
+      font-size:11px;color:#8A9BB3;
+      margin-bottom:9px;
+    }
+    #ss-tour-track {
+      height:4px;background:#293D59;
+      border-radius:10px;margin-bottom:20px;
+      overflow:hidden;
+    }
+    #ss-tour-bar {
+      height:100%;background:#C9A86A;
+      transition:width .2s;
+    }
+    #ss-tour-actions {
+      display:flex;align-items:center;gap:9px;
+    }
+    #ss-tour-actions button {
+      border:0;border-radius:9px;padding:11px 15px;
+      font-weight:600;font-size:13px;
+      cursor:pointer;
+    }
+    #ss-tour-next {
+      background:#C9A86A;color:#152642;flex:1;
+    }
+    #ss-tour-back {
+      background:#293D59;color:white;
+    }
+    #ss-tour-skip {
+      background:transparent;color:#AAB9CC;
+      padding-left:0!important;
+    }
+    #ss-tour-launch {
+      position:fixed;right:16px;bottom:85px;
+      z-index:999990;background:#C9A86A;
+      color:#152642;border:0;border-radius:30px;
+      padding:12px 17px;font-weight:700;
+      font-size:12px;box-shadow:0 5px 20px #0004;
+      cursor:pointer;
+    }
+    @media(max-width:420px) {
+      #ss-tour-card {bottom:15px;}
+    }
+  `;
+
+  const style = document.createElement("style");
+  style.textContent = css;
+  document.head.appendChild(style);
+
+  const overlay = document.createElement("div");
+  overlay.id = "ss-tour-overlay";
+
+  const spot = document.createElement("div");
+  spot.id = "ss-tour-spot";
+
+  const card = document.createElement("div");
+  card.id = "ss-tour-card";
+
+  const launch = document.createElement("button");
+  launch.id = "ss-tour-launch";
+  launch.textContent = "✦ Take App Tour";
+
+  document.body.append(overlay, spot, card, launch);
+
+  function findTarget(selector) {
+    if (!selector) return null;
+
+    for (const s of selector.split(",")) {
+      const el = document.querySelector(s.trim());
+      if (el) return el;
+    }
+    return null;
+  }
+
+  function render() {
+    const step = steps[current];
+    const target = findTarget(step.target);
+
+    spot.style.display = "none";
+
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      setTimeout(() => {
+        if (!active) return;
+        const r = target.getBoundingClientRect();
+
+        spot.style.display = "block";
+        spot.style.top = (r.top - 7) + "px";
+        spot.style.left = (r.left - 7) + "px";
+        spot.style.width = (r.width + 14) + "px";
+        spot.style.height = (r.height + 14) + "px";
+      }, 300);
+    }
+
+    card.innerHTML = `
+      <div id="ss-tour-progress">
+        STEP ${current + 1} OF ${steps.length}
+      </div>
+      <div id="ss-tour-track">
+        <div id="ss-tour-bar"
+          style="width:${((current + 1) / steps.length) * 100}%">
+        </div>
+      </div>
+      <h3>${step.title}</h3>
+      <p>${step.text}</p>
+      <div id="ss-tour-actions">
+        <button id="ss-tour-skip">Skip</button>
+        <button id="ss-tour-back"
+          ${current === 0 ? "disabled" : ""}>Back</button>
+        <button id="ss-tour-next">
+          ${current === steps.length - 1 ? "Finish" : "Next"}
+        </button>
+      </div>
+    `;
+
+    card.querySelector("#ss-tour-skip").onclick = close;
+    card.querySelector("#ss-tour-back").onclick = () => {
+      if (current > 0) {
+        current--;
+        render();
+      }
+    };
+    card.querySelector("#ss-tour-next").onclick = () => {
+      if (current < steps.length - 1) {
+        current++;
+        render();
+      } else {
+        close();
+      }
+    };
+  }
+
+  function start() {
+    current = 0;
+    active = true;
+    overlay.style.display = "block";
+    card.style.display = "block";
+    launch.style.display = "none";
+    render();
+  }
+
+  function close() {
+    active = false;
+    overlay.style.display = "none";
+    spot.style.display = "none";
+    card.style.display = "none";
+    launch.style.display = "block";
+  }
+
+  launch.addEventListener("click", start);
+  overlay.addEventListener("click", close);
+
+  card.style.display = "none";
+
+})();
+
