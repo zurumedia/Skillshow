@@ -301,6 +301,77 @@
 
 
 
+  /* ---------- Cloud tour: first visit per account ---------- */
+  try {
+    if (!window.__ssCloudAutoTourHook && typeof window.draw === 'function') {
+      window.__ssCloudAutoTourHook = true;
+
+      var ssOriginalDraw = window.draw;
+      var ssTourPending = false;
+
+      window.draw = function () {
+        var result = ssOriginalDraw.apply(this, arguments);
+
+        if (
+          ssTourPending ||
+          step !== 'app' ||
+          tab !== 'home' ||
+          !uinfo ||
+          !uinfo.p ||
+          !uinfo.p.username
+        ) {
+          return result;
+        }
+
+        var ssUsername = String(uinfo.p.username).toLowerCase();
+        var ssTourKey = 'ss_cloud_tour_seen_v1_' +
+          ssUsername.replace(/[^a-z0-9_-]/g, '_');
+
+        try {
+          if (localStorage.getItem(ssTourKey)) return result;
+        } catch (e) {
+          return result;
+        }
+
+        ssTourPending = true;
+
+        setTimeout(function () {
+          ssTourPending = false;
+
+          if (
+            step !== 'app' ||
+            tab !== 'home' ||
+            !uinfo ||
+            !uinfo.p ||
+            String(uinfo.p.username).toLowerCase() !== ssUsername
+          ) {
+            return;
+          }
+
+          if (
+            !window.SkillTour ||
+            typeof window.SkillTour.start !== 'function'
+          ) {
+            return;
+          }
+
+          try {
+            if (localStorage.getItem(ssTourKey)) return;
+
+            localStorage.setItem(ssTourKey, '1');
+            window.SkillTour.start();
+          } catch (e) {
+            console.warn('SkillShow Cloud tour could not start:', e);
+          }
+        }, 1600);
+
+        return result;
+      };
+    }
+  } catch (err) {
+    console.warn('SkillShow Cloud auto-tour skipped:', err);
+        }
+          
   /* ---------- no "Hire me" button on the official support account ---------- */
   try {
     var hmApp = document.getElementById('app');
