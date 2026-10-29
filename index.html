@@ -202,12 +202,16 @@ async function save(){
   let av=prof?prof.avatar_url:null,cv=prof?prof.cover_url:null;
   if(tp.avatarFile)av=await up('avatars',tp.avatarFile);
   if(tp.coverFile)cv=await up('covers',tp.coverFile);
-  const row={id:me.id,username:u,full_name:n,bio:tp.bio.trim(),avatar_url:av,cover_url:cv,headline:(tp.headline||'').trim().slice(0,80),skills:parseSkills(tp.skills),open_to_work:!!tp.open};
-  const {data,error}=await sb.from('profiles').upsert(row).select().single();
-  if(error){toast(error.code==='23505'?'That username is taken, try another':error.message);lock(false);return}
-  const first=!prof;prof=data;lock(false);step='app';startRT();tab=first?'home':'profile';draw();toast(first?'Welcome to Skillshow':'Profile updated');
- }catch(e){lock(false);toast('Upload failed: '+(e.message||e))}
+  
+const waRaw=(tp.whatsapp||'').trim();
+const wa=waRaw.replace(/\D/g,'');
+if(waRaw&&(wa.length<8||wa.length>15)){
+ toast('Enter a valid WhatsApp number with country code, e.g. 2348012345678');
+ lock(false);
+ return;
 }
+const row={id:me.id,username:u,full_name:n,bio:tp.bio.trim(),avatar_url:av,cover_url:cv,headline:(tp.headline||'').trim().slice(0,80),skills:parseSkills(tp.skills),open_to_work:!!tp.open,whatsapp_number:wa||null};
+  
 function edit(){tp={name:prof.full_name,user:prof.username,bio:prof.bio||'',headline:prof.headline||'',skills:(prof.skills||[]).join(', '),open:!!prof.open_to_work};step='setup';draw()}
 async function out(){sb.removeAllChannels();rt=null;pres=null;online=new Set();jcLoaded=false;await sb.auth.signOut();me=null;prof=null;em='';mode='login';step='welcome';draw()}
 const HRT=f=>`<svg class="i" viewBox="0 0 24 24" style="${f?'fill:#ED4956;stroke:#ED4956':''}"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/></svg>`;
