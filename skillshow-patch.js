@@ -298,75 +298,7 @@
         h.className = 'ss-hand';
         h.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e8bb67" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
         o.appendChild(h);
-      }
-      var card = document.createElement('div');
-      card.className = 'ss-card';
-      var cw = Math.min(vw - 24, 340);
-      card.style.width = cw + 'px';
-      var h4 = document.createElement('h4'); h4.textContent = st.t;
-      var p = document.createElement('p'); p.textContent = st.x;
-      var row = document.createElement('div'); row.className = 'ss-row';
-      var skip = document.createElement('button'); skip.className = 'ss-skip'; skip.textContent = i === tsteps.length - 1 ? '' : 'Skip';
-      skip.onclick = endTour;
-      var dots = document.createElement('div'); dots.className = 'ss-dots';
-      for (var d = 0; d < tsteps.length; d++) { var di = document.createElement('i'); if (d === i) di.className = 'on'; dots.appendChild(di); }
-      var next = document.createElement('button'); next.className = 'ss-next';
-      next.textContent = i === tsteps.length - 1 ? 'Done' : 'Next';
-      next.onclick = function () { if (tidx >= tsteps.length - 1) endTour(); else tshow(tidx + 1); };
-      row.appendChild(skip); row.appendChild(dots); row.appendChild(next);
-      card.appendChild(h4); card.appendChild(p); card.appendChild(row);
-      o.appendChild(card);
-      document.body.appendChild(o);
-      var left = r ? Math.min(Math.max(12, r.left + r.width / 2 - cw / 2), vw - cw - 12) : (vw - cw) / 2;
-      card.style.left = left + 'px';
-      var ch = card.offsetHeight;
-      if (!r) card.style.top = Math.max(12, (vh - ch) / 2 + (st.hand ? 70 : 0)) + 'px';
-      else if (r.top > vh / 2) card.style.top = Math.max(12, r.top - ch - 20) + 'px';
-      else card.style.top = Math.min(vh - ch - 12, r.bottom + 20) + 'px';
-    }
-    function startTour() {
-      if (document.getElementById('ss-tour')) return;
-      tmark();
-      tshow(0);
-    }
-    window.addEventListener('resize', function () {
-      if (document.getElementById('ss-tour')) tshow(tidx);
-    });
 
-    /* auto-start once, on the home feed, for anyone who has not seen it */
-    var tpending = false, drawWithFixes = window.draw;
-    window.draw = function () {
-      drawWithFixes();
-      if (tpending || tseen() || step !== 'app' || tab !== 'home') return;
-      tpending = true;
-      setTimeout(function () {
-        tpending = false;
-        if (!tseen() && step === 'app' && tab === 'home' && !document.getElementById('ss-tour')) startTour();
-      }, 1400);
-    };
-
-    /* "Take the app tour" button on the profile page */
-    var appEl = document.getElementById('app');
-    if (appEl && window.MutationObserver) {
-      new MutationObserver(function () {
-        if (tab !== 'profile' || document.getElementById('ss-tour-btn')) return;
-        var btns = document.querySelectorAll('#app button'), fb = null;
-        for (var k = 0; k < btns.length; k++) {
-          if (/Send feedback or suggestion/i.test(btns[k].textContent)) { fb = btns[k]; break; }
-        }
-        if (!fb) return;
-        var nb = document.createElement('button');
-        nb.id = 'ss-tour-btn';
-        nb.className = fb.className;
-        nb.textContent = 'Take the app tour';
-        nb.onclick = function () {
-          tab = 'home'; draw();
-          setTimeout(startTour, 600);
-        };
-        fb.parentNode.insertBefore(nb, fb.nextSibling);
-      }).observe(appEl, { childList: true, subtree: true });
-    }
-  } catch (err2) { console.warn('Skillshow patch (tour) skipped:', err2); }
 
 
   /* ---------- no "Hire me" button on the official support account ---------- */
