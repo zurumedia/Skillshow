@@ -1,7 +1,7 @@
 /* SkillShow Tour — shows new users where everything is.
    Add to index.html (last script line):  <script src="tour.js?v=1"></script>
    Starts by itself once for each person after login.
-   Replay anytime: open  skillshowng.netlify.app/?tour=1   or run  SkillTour.start()  */
+   Replay anytime: open  https://zurumedia.github.io/Skillshow//?tour=1   or run  SkillTour.start()  */
 (function () {
   "use strict";
   var KEY = "ss_tour_v3", idx = 0, root = null, ring = null, card = null, running = false, prevOverflow = "";
