@@ -28,7 +28,7 @@
     { t: "Search", d: "Look for people, skills and posts.", el: function () { return hi(0); } },
     { t: "Notifications", d: "The bell tells you about likes, comments and new followers.", el: function () { return hi(1); } },
     { t: "Your profile", d: "Tap your photo to open your profile, edit it and show your work.", el: hiLast },
-    { t: "You are ready! 🎉", d: "Start by posting your first skill with the + button. Want to see this again? Open skillshowng.netlify.app/?tour=1" }
+    { t: "You are ready! 🎉", d: "Start by posting your first skill with the + button." }
   ];
 
   function userKey() { return KEY + ":" + (typeof me !== "undefined" && me ? me.id : "x"); }
