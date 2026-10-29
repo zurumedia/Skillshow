@@ -2,6 +2,7 @@
    - Notifications icon becomes a bell
    - Messages moves to the bottom bar (5th slot)
    - Profile moves to the top bar as your photo
+   - Post (+) sits in the middle of the bottom bar
    Load AFTER the other scripts. */
 
 (function () {
@@ -43,6 +44,16 @@
       profSpan.className = '';
       profSpan.innerHTML = avatarHtml();
       hi.appendChild(profSpan);
+    }
+    /* Post (+) goes in the middle, Communities moves next to Messages */
+    let plus = null, comm = null;
+    Array.from(nav.children).forEach(function (k) {
+      const oc = k.getAttribute('onclick') || '';
+      if (oc.indexOf('openNew') !== -1) plus = k;
+      else if (oc.indexOf("'comm'") !== -1) comm = k;
+    });
+    if (plus && comm && Array.from(nav.children).indexOf(plus) > Array.from(nav.children).indexOf(comm)) {
+      nav.insertBefore(plus, comm);
     }
     nav.dataset.ss = '1';
   }
