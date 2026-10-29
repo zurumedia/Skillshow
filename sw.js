@@ -36,3 +36,40 @@ self.addEventListener('fetch', e => {
     })));
   }
 });
+
+/* ---- Phone notifications ---- */
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) {}
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      /* App is open and on screen: no buzz needed, the app already shows it */
+      if (list.some(c => c.visibilityState === 'visible')) return;
+      return self.registration.showNotification(d.title || 'Skillshow', {
+        body: d.body || '',
+        icon: d.icon || './skillshow-192.png',
+        badge: './skillshow-192.png',
+        tag: d.tag || undefined,
+        renotify: !!d.tag,
+        vibrate: [80, 40, 80],
+        data: { go: d.go || '' }
+      });
+    })
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const go = (e.notification.data && e.notification.data.go) || '';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) {
+        if (c.url.indexOf(self.location.origin) === 0) {
+          c.postMessage({ type: 'ss-open', go });
+          return c.focus();
+        }
+      }
+      return self.clients.openWindow('./' + (go ? '?go=' + encodeURIComponent(go) : ''));
+    })
+  );
+});
