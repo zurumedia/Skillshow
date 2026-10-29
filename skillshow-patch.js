@@ -388,3 +388,114 @@
 })();
 
         
+/* SkillShow Patch: Full-screen profile photo viewer */
+(function () {
+  "use strict";
+
+  if (window.__ssProfilePhotoViewer) return;
+  window.__ssProfilePhotoViewer = true;
+
+  function openPhoto(src, alt) {
+    if (!src) return;
+
+    var old = document.getElementById("ss-photo-viewer");
+    if (old) old.remove();
+
+    var overlay = document.createElement("div");
+    overlay.id = "ss-photo-viewer";
+
+    overlay.style.cssText = [
+      "position:fixed",
+      "inset:0",
+      "z-index:2147483647",
+      "background:rgba(0,0,0,.94)",
+      "display:flex",
+      "align-items:center",
+      "justify-content:center",
+      "padding:18px",
+      "box-sizing:border-box"
+    ].join(";");
+
+    var img = document.createElement("img");
+    img.src = src;
+    img.alt = alt || "Profile photo";
+    img.style.cssText = [
+      "display:block",
+      "max-width:100%",
+      "max-height:85vh",
+      "width:auto",
+      "height:auto",
+      "object-fit:contain",
+      "border-radius:8px"
+    ].join(";");
+
+    var close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "\u00d7";
+    close.setAttribute("aria-label", "Close photo");
+    close.style.cssText = [
+      "position:absolute",
+      "top:12px",
+      "right:16px",
+      "width:44px",
+      "height:44px",
+      "border:0",
+      "border-radius:50%",
+      "background:rgba(255,255,255,.14)",
+      "color:#fff",
+      "font-size:32px",
+      "line-height:1",
+      "cursor:pointer"
+    ].join(";");
+
+    function closeViewer() {
+      document.removeEventListener("keydown", onKey);
+      overlay.remove();
+    }
+
+    function onKey(e) {
+      if (e.key === "Escape" || e.key === "Backspace") {
+        e.preventDefault();
+        closeViewer();
+      }
+    }
+
+    close.addEventListener("click", closeViewer);
+
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) closeViewer();
+    });
+
+    img.addEventListener("click", function (e) {
+      e.stopPropagation();
+    });
+
+    overlay.appendChild(img);
+    overlay.appendChild(close);
+    document.body.appendChild(overlay);
+    document.addEventListener("keydown", onKey);
+  }
+
+  document.addEventListener("click", function (e) {
+    var target = e.target;
+    if (!target || !target.closest) return;
+
+    var img = target.closest(
+      ".dp img, .av img, .avatar img, .profile-pic img, img[data-profile-photo]"
+    );
+
+    if (!img || !img.src) return;
+
+    // Only open images that are actually profile photos.
+    var isProfile =
+      img.hasAttribute("data-profile-photo") ||
+      !!img.closest(".dp, .av, .avatar, .profile-pic");
+
+    if (!isProfile) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    openPhoto(img.currentSrc || img.src, img.alt);
+  }, true);
+})();
+  
