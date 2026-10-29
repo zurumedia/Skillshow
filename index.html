@@ -980,8 +980,12 @@ setup:()=>{const av=tp.avatarPrev||(prof&&prof.avatar_url),cv=tp.coverPrev||(pro
 <div class="lbl">Full name</div><input class="fi" value="${esc(tp.name)}" oninput="tp.name=this.value" placeholder="Your name" maxlength="60">
 <div class="lbl">Username</div><input class="fi" value="${esc(tp.user)}" oninput="tp.user=this.value.toLowerCase().replace(/[^a-z0-9._]/g,'');this.value=tp.user" placeholder="username" maxlength="20" autocapitalize="none" autocorrect="off">
 <div class="lbl">Bio</div><textarea class="fi" rows="3" maxlength="150" oninput="tp.bio=this.value" placeholder="What do you do? Tell people in a line or two.">${esc(tp.bio)}</textarea>
-<div class="lbl">Headline</div><input class="fi" maxlength="80" value="${esc(tp.headline||'')}" oninput="tp.headline=this.value" placeholder="e.g. Brand designer in Port Harcourt">
+
 <div class="lbl">Skills (separate with commas, up to 8)</div><input class="fi" value="${esc(tp.skills||'')}" oninput="tp.skills=this.value" placeholder="Logo design, Branding, Illustrator">
+<div class="lbl">WhatsApp number (for bookings)</div>
+<input class="fi" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" value="${esc(tp.whatsapp||'')}" oninput="tp.whatsapp=this.value" placeholder="e.g. 2348012345678">
+<p class="co" style="font-size:12px;margin-top:-4px">Include your country code, without the + sign. People can use this number to contact you about bookings.</p>
+<label class="chk"><input type="checkbox" ${tp.open?'checked':''} onchange="tp.open=this.checked"> I am open to work</label>
 <label class="chk"><input type="checkbox" ${tp.open?'checked':''} onchange="tp.open=this.checked"> I am open to work</label>
 <button class="btn" onclick="save()">${prof?'Save changes':'Finish and start'}</button>${prof?`<button class="lk" onclick="step='app';draw()">Cancel</button>`:''}</div>`},
 app:()=>{
