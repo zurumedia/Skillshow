@@ -388,4 +388,97 @@
   if (canDetect) arm();
 })();
 
-        
+    
+/* SkillShow Patch: Confirm before exiting the app */
+(function () {
+  "use strict";
+
+  if (window.__ssConfirmExitInstalled) return;
+  window.__ssConfirmExitInstalled = true;
+
+  var lastBackPress = 0;
+  var exitDelay = 2000;
+  var toastTimer = null;
+  var toastEl = null;
+
+  function showExitMessage() {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.id = "ss-exit-toast";
+      toastEl.textContent = "Press Back again to exit SkillShow";
+
+      toastEl.style.cssText =
+        "position:fixed;" +
+        "left:50%;" +
+        "bottom:calc(env(safe-area-inset-bottom,0px) + 28px);" +
+        "transform:translateX(-50%);" +
+        "z-index:2147483647;" +
+        "background:#152642;" +
+        "color:#fff;" +
+        "border:1px solid #C9A86A;" +
+        "border-radius:14px;" +
+        "padding:13px 18px;" +
+        "font:600 14px system-ui,sans-serif;" +
+        "box-shadow:0 5px 20px rgba(0,0,0,.35);" +
+        "max-width:90%;" +
+        "text-align:center;" +
+        "pointer-events:none;";
+
+      document.body.appendChild(toastEl);
+    }
+
+    toastEl.style.display = "block";
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      if (toastEl) toastEl.style.display = "none";
+    }, exitDelay);
+  }
+
+  function installExitGuard() {
+    if (!document.body) return;
+
+    // Create a history entry so the first Back press
+    // can be intercepted instead of leaving immediately.
+    try {
+      history.pushState({ ssExitGuard: true }, "", location.href);
+    } catch (e) {
+      return;
+    }
+
+    window.addEventListener("popstate", function () {
+      // Do not interfere with the full-screen photo viewer.
+      if (
+        document.getElementById("ss-viewer") &&
+        document.getElementById("ss-viewer").classList.contains("open")
+      ) {
+        return;
+      }
+
+      var now = Date.now();
+
+      if (now - lastBackPress < exitDelay) {
+        // Let the browser or installed app handle the next Back press.
+        lastBackPress = 0;
+        return;
+      }
+
+      lastBackPress = now;
+      showExitMessage();
+
+      // Restore the history entry to keep the app open.
+      try {
+        history.pushState({ ssExitGuard: true }, "", location.href);
+      } catch (e) {}
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installExitGuard, {
+      once: true
+    });
+  } else {
+    installExitGuard();
+  }
+})();
+      
