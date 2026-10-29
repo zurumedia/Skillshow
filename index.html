@@ -819,6 +819,24 @@ function addProj(){
  pj={cover:null,imgs:[]};
  sheetOpen(`<h3>Add a project</h3><div class="lbl">Project title</div><input class="fi" id="pt" maxlength="80" placeholder="e.g. Brand identity for a coffee shop" style="margin:6px 0 10px"><div class="lbl">Skill or category</div><input class="fi" id="psk" maxlength="30" placeholder="e.g. Logo design" style="margin:6px 0 10px"><div class="lbl">Description</div><textarea class="fi" id="pd" rows="4" maxlength="1500" placeholder="What was the goal, what did you do, and what was the result?" style="margin:6px 0 10px"></textarea><div class="lbl">Link (optional)</div><input class="fi" id="pl" maxlength="300" placeholder="https://" style="margin:6px 0 10px"><input type="file" id="pc1" accept="image/*" hidden onchange="pickP(this,'cover')"><input type="file" id="pc2" accept="image/*" multiple hidden onchange="pickP(this,'imgs')"><div class="up" id="pcv" style="min-height:70px" onclick="$('#pc1').click()">${CAM} Add a cover image (required)</div><div class="up" id="pim" style="min-height:50px;margin-top:8px" onclick="$('#pc2').click()">Add up to 5 more images (optional)</div><button class="btn" id="pbt" style="margin-top:12px" onclick="saveProj()">Add to portfolio</button>`);
 }
+  
+function bookPerson(id){
+ const p=uinfo&&uinfo.p;
+ if(!p||p.id!==id){
+  toast('Could not load this profile. Please try again.');
+  return;
+ }
+ const number=String(p.whatsapp_number||'').replace(/\D/g,'');
+ if(number.length<8||number.length>15){
+  toast('This creator has not added a booking WhatsApp number yet.');
+  return;
+ }
+ const name=p.full_name||'there';
+ const message='Hi '+name+', I found your profile on SkillShow and would like to discuss booking your services. Could you please share your availability and rates?';
+ const url='https://wa.me/'+number+'?text='+encodeURIComponent(message);
+ window.open(url,'_blank');
+}
+  
 function pickP(inp,w){
  const fs=[...inp.files].filter(f=>f.type.startsWith('image/'));inp.value='';if(!fs.length){toast('Please choose images');return}
  if(fs.some(f=>f.size>20*1024*1024)){toast('An image is too large (max 20 MB)');return}
