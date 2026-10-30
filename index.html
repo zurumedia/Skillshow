@@ -1035,6 +1035,87 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
  <script src="messages.js?v=6"></script>
  <script src="push.js?v=1"></script>
  <script src="SkillShow-Unified-Patch-V3.js"></script>
- <script src="skillshow-tourbutton.js"></script>
+ <script src="skillshow-tourbutton.js"></script> 
+<script>
+(function () {
+  if (window.skillShowNotificationTestLoaded) return;
+  window.skillShowNotificationTestLoaded = true;
+
+  const button = document.createElement("button");
+  button.id = "skillshow-enable-notifications";
+  button.textContent = "🔔 Enable Notifications";
+
+  Object.assign(button.style, {
+    position: "fixed",
+    bottom: "90px",
+    right: "16px",
+    zIndex: "999999",
+    background: "#C9A86A",
+    color: "#0F203A",
+    border: "none",
+    borderRadius: "30px",
+    padding: "13px 18px",
+    fontSize: "14px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.25)"
+  });
+
+  document.body.appendChild(button);
+
+  button.addEventListener("click", async function () {
+    if (!("Notification" in window)) {
+      alert("Your browser does not support notifications.");
+      return;
+    }
+
+    if (!("serviceWorker" in navigator)) {
+      alert("Service workers are not supported in this browser.");
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Activating...";
+
+    try {
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        alert(
+          permission === "denied"
+            ? "Notifications are blocked. Enable them in your browser or phone settings."
+            : "Notification permission was not granted."
+        );
+        return;
+      }
+
+      const registration =
+        await navigator.serviceWorker.register("./sw.js");
+
+      await navigator.serviceWorker.ready;
+
+      await registration.showNotification("SkillShow", {
+        body: "Notifications are now enabled on this device!",
+        icon: "./icons/icon-192.png",
+        badge: "./icons/icon-192.png",
+        tag: "skillshow-test",
+        vibrate: [200, 100, 200]
+      });
+
+      button.textContent = "✓ Notifications Enabled";
+      alert("Permission granted! Your test notification has been sent.");
+
+    } catch (error) {
+      console.error("SkillShow notification error:", error);
+      alert("Something went wrong: " + error.message);
+    } finally {
+      button.disabled = false;
+      if (button.textContent === "Activating...") {
+        button.textContent = "🔔 Enable Notifications";
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>
