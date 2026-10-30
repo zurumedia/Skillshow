@@ -1036,6 +1036,7 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
  <script src="push.js?v=1"></script>
  <script src="SkillShow-Unified-Patch-V3.js"></script>
  <script src="skillshow-tourbutton.js"></script> 
+
 <script>
 (function () {
   if (window.skillShowNotificationTestLoaded) return;
@@ -1061,61 +1062,55 @@ if('serviceWorker' in navigator)addEventListener('load',()=>{navigator.serviceWo
     boxShadow: "0 4px 15px rgba(0,0,0,0.25)"
   });
 
+  if (
+    "Notification" in window &&
+    Notification.permission === "granted"
+  ) {
+    return;
+  }
+
   document.body.appendChild(button);
 
   button.addEventListener("click", async function () {
-    if (!("Notification" in window)) {
-      alert("Your browser does not support notifications.");
-      return;
-    }
-
-    if (!("serviceWorker" in navigator)) {
-      alert("Service workers are not supported in this browser.");
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = "Activating...";
-
     try {
-      const permission = await Notification.requestPermission();
-
-      if (permission !== "granted") {
-        alert(
-          permission === "denied"
-            ? "Notifications are blocked. Enable them in your browser or phone settings."
-            : "Notification permission was not granted."
-        );
+      if (!("Notification" in window)) {
+        alert("Your browser does not support notifications.");
         return;
       }
 
-      const registration =
-        await navigator.serviceWorker.register("./sw.js");
+      button.disabled = true;
+      button.textContent = "Activating...";
 
-      await navigator.serviceWorker.ready;
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        button.disabled = false;
+        button.textContent = "🔔 Enable Notifications";
+        alert("Notifications were not enabled.");
+        return;
+      }
+
+      await navigator.serviceWorker.register("./sw.js");
+      const registration = await navigator.serviceWorker.ready;
 
       await registration.showNotification("SkillShow", {
         body: "Notifications are now enabled on this device!",
         icon: "./icons/icon-192.png",
         badge: "./icons/icon-192.png",
-        tag: "skillshow-test",
-        vibrate: [200, 100, 200]
+        tag: "skillshow-test"
       });
 
-      button.textContent = "✓ Notifications Enabled";
-      alert("Permission granted! Your test notification has been sent.");
+      button.remove();
 
     } catch (error) {
       console.error("SkillShow notification error:", error);
-      alert("Something went wrong: " + error.message);
-    } finally {
       button.disabled = false;
-      if (button.textContent === "Activating...") {
-        button.textContent = "🔔 Enable Notifications";
-      }
+      button.textContent = "🔔 Enable Notifications";
+      alert("Notification error: " + error.message);
     }
   });
 })();
 </script>
+ 
 </body>
 </html>
