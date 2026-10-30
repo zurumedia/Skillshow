@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkillShow file check</title>
+<style>
+body{margin:0;padding:16px;background:#0a1a3a;color:#fff;font:15px/1.45 system-ui,sans-serif}
+h1{font-size:20px;margin:0 0 4px}p{color:#9fb3de;margin:0 0 14px}
+.r{padding:10px 12px;margin:6px 0;border-radius:12px;background:#12285a;word-break:break-word}
+.ok{border-left:5px solid #22c55e}.bad{border-left:5px solid #ff2d8a}.warn{border-left:5px solid #e0b070}
+b{display:block}small{color:#9fb3de}
+button{margin:14px 0;padding:12px 20px;border:0;border-radius:22px;background:#e0b070;color:#1a1204;font:700 15px system-ui}
+</style>
+</head>
+<body>
+<h1>SkillShow file check</h1>
+<p>Wait a few seconds, then tap "Copy report" and paste it to Claude.</p>
+<div id="out"></div>
+<button id="copy">Copy report</button>
+<script>
+(async function () {
+  var out = document.getElementById("out"), report = [];
+  function row(cls, title, note) {
+    var d = document.createElement("div");
+    d.className = "r " + cls;
+    d.innerHTML = "<b>" + title + "</b><small>" + (note || "") + "</small>";
+    out.appendChild(d);
+    report.push((cls === "ok" ? "OK   " : cls === "bad" ? "FAIL " : "WARN ") + title + (note ? " - " + note : ""));
+  }
+  async function get(u) {
+    try {
+      var r = await fetch(u + (u.indexOf("?") < 0 ? "?" : "&") + "chk=" + Date.now(), { cache: "no-store" });
+      return { status: r.status, text: r.ok ? await r.text() : "" };
+    } catch (e) { return { status: 0, text: "" }; }
+  }
+
+  /* 1. index.html and its script lines */
+  var idx = await get("index.html");
+  if (idx.status !== 200) { row("bad", "index.html does not load", "status " + idx.status); return; }
+  row("ok", "index.html loads", idx.text.length + " characters");
+
+  var srcs = [], re = /<script[^>]+src="([^"]+)"/g, m;
+  while ((m = re.exec(idx.text))) if (!/^https?:/.test(m[1])) srcs.push(m[1]);
+  row("ok", "Scripts in index.html", srcs.join("<br>") || "none");
+
+  var needed = ["messages.js", "layout.js", "notifications.js", "push.js", "SkillShow-Unified-Patch-V3.js", "tour.js"];
+  needed.forEach(function (n) {
+    var has = srcs.some(function (s) { return s.split("?")[0] === n; });
+    row(has ? "ok" : "bad", n + (has ? " is listed in index.html" : " is NOT listed in index.html"));
+  });
+
+  /* 2. every listed script: exists and has no syntax error */
+  for (var i = 0; i < srcs.length; i++) {
+    var f = srcs[i].split("?")[0], r = await get(srcs[i]);
+    if (r.status !== 200) { row("bad", f + " not found on the site", "status " + r.status + ". Check the file name and capital letters."); continue; }
+    var err = "";
+    try { new Function(r.text); } catch (e) { err = e.message; }
+    row(err ? "bad" : "ok", f + (err ? " has a code error" : " loads fine"), err || r.text.length + " characters");
+  }
+
+  /* 3. quick content checks */
+  var tour = await get("tour.js");
+  if (tour.status === 200) {
+    var mine = /SkillShow Tour — shows new users/.test(tour.text), pink = /F45AA5/i.test(tour.text);
+    row(pink ? "ok" : "warn", "tour.js is " + (pink ? "your pink tour" : mine ? "Claude's plain tour (not your original pink one)" : "an unknown version"));
+  }
+  var push = await get("push.js");
+  if (push.status === 200) row(/PASTE_YOUR_PUBLIC_KEY_HERE/.test(push.text) ? "bad" : "ok", "push.js public key " + (/PASTE_YOUR_PUBLIC_KEY_HERE/.test(push.text) ? "NOT set" : "is set"));
+  var sw = await get("sw.js");
+  if (sw.status === 200) {
+    var pc = (sw.text.match(/addEventListener\('push'/g) || []).length, nc = (sw.text.match(/addEventListener\('notificationclick'/g) || []).length;
+    row(pc === 1 && nc === 1 ? "ok" : "bad", "sw.js notification code", "push handlers: " + pc + ", click handlers: " + nc + " (each should be 1)");
+  } else row("bad", "sw.js not found", "status " + sw.status);
+
+  /* 4. phone support */
+  row("serviceWorker" in navigator ? "ok" : "bad", "Service worker support");
+  row("PushManager" in window ? "ok" : "warn", "Push support", "PushManager " + ("PushManager" in window ? "available" : "missing (iPhone needs the app added to Home Screen)"));
+  row("Notification" in window && Notification.permission === "granted" ? "ok" : "warn", "Notification permission", "Notification" in window ? Notification.permission : "not supported");
+  try {
+    var regs = await navigator.serviceWorker.getRegistrations();
+    row(regs.length ? "ok" : "warn", "Service worker registered", regs.length + " registration(s)");
+  } catch (e) {}
+
+  document.getElementById("copy").onclick = function () {
+    var t = report.join("\n");
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { alert("Copied. Paste it to Claude."); }, function () { prompt("Copy this:", t); });
+  };
+})();
+</script>
+</body>
+</html>
