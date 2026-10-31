@@ -19,9 +19,8 @@ button{cursor:pointer;border:0;background:none;padding:0}
 
 /* layout */
 .shell{max-width:var(--col);margin:0 auto;min-height:100dvh;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom))}
-.top{position:sticky;top:0;z-index:20;height:var(--top);display:flex;align-items:center;gap:var(--s4);padding:0 var(--s4);background:var(--bg);border-bottom:1px solid var(--line)}
-.wm{flex:1;font-size:22px;font-weight:800;letter-spacing:-.6px;color:var(--pink)}
-.wm i{font-style:normal;color:var(--gold)}
+.top{position:sticky;top:0;z-index:20;height:var(--top);display:flex;align-items:center;gap:var(--s4);padding:0 var(--s4);background:var(--bg);border-bottom:1px solid var(--line)font-size:22px;font-weight:800;letter-spacing:-.6px;color:var(--pink)}
+.wm{flex:1;text-align:left;{font-style:normal;color:var(--gold)}
 .tb{position:relative;display:flex;color:var(--tx);padding:var(--s1)}
 .dot{position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--pink)}
 .me{width:34px;height:34px;border-radius:var(--r-sm);overflow:hidden;border:2px solid transparent}
@@ -69,3 +68,4 @@ label.f span{display:block;margin-bottom:6px;font-size:12px;font-weight:600;colo
 .auth h1{font-size:22px;margin:0 0 var(--s2)}
 .auth p{margin:0 0 var(--s5)}
 .stack>*+*{margin-top:var(--s3)}
+[hidden]{display:none!important}
