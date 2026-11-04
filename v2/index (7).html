@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#02132F">
+<title>Skillshow</title>
+<link rel="preconnect" href="https://aavzlrerdnnkmecpmjsi.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="theme.css?v=7">
+</head>
+<body>
+<script>
+/* Shows any error on screen, so a blank page never happens silently. */
+(function () {
+  function show(t) {
+    var b = document.getElementById("dbg");
+    if (!b) {
+      b = document.createElement("pre"); b.id = "dbg";
+      b.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;margin:0;padding:10px 12px;background:#3a0a14;color:#ffd7de;font:12px/1.4 monospace;white-space:pre-wrap;max-height:45vh;overflow:auto";
+      document.body.appendChild(b);
+    }
+    b.textContent += t + "\n";
+  }
+  window.addEventListener("error", function (e) {
+    var t = e.target;
+    if (t && t.tagName === "SCRIPT") return show("Could not load: " + (t.src || "").split("/").slice(-1)[0]);
+    if (t && t.tagName === "LINK") return show("Could not load: " + (t.href || "").split("/").slice(-1)[0]);
+    show((e.message || "Error") + " (" + ((e.filename || "").split("/").pop()) + ":" + e.lineno + ")");
+  }, true);
+  window.addEventListener("unhandledrejection", function (e) { show("Problem: " + ((e.reason && e.reason.message) || e.reason)); });
+  setTimeout(function () {
+    var a = document.getElementById("app");
+    if (a && !a.innerHTML.trim()) show("The app did not start. Page: " + location.pathname);
+  }, 6000);
+})();
+</script>
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+/* Loads the files in order. If something is missing or breaks, it says so on screen instead of staying blank. */
+(function () {
+  var files = [
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js",
+    "app.js?v=3", "home.js?v=5", "create.js?v=2", "stories.js?v=2", "profile.js?v=1", "tour.js?v=1", "auth.js?v=3"
+  ];
+  var ALT = "https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js", usedAlt = false;
+  function show(msg) {
+    var a = document.getElementById("app");
+    if (!a || a.innerHTML.trim()) return;
+    a.innerHTML = '<div style="max-width:420px;margin:0 auto;padding:40px 20px;font-family:system-ui,sans-serif;color:#fff">' +
+      '<div style="font-size:30px;font-weight:800;color:#FA83C1;margin-bottom:12px">Skillshow<span style="color:#E1AD48">.</span></div>' +
+      '<p style="color:#8A9BB3;line-height:1.5;margin:0 0 16px">' + msg + "</p>" +
+      '<button onclick="location.reload()" style="min-height:44px;padding:0 24px;border:0;border-radius:999px;background:#E1AD48;color:#1E1403;font:700 15px system-ui">Try again</button></div>';
+  }
+  window.addEventListener("error", function (e) {
+    setTimeout(function () { show("Something went wrong: " + (e.message || "unknown error") + "<br><small>" + String(e.filename || "").split("/").pop() + " line " + (e.lineno || "?") + "</small>"); }, 1500);
+  });
+  function load(i) {
+    if (i >= files.length) return;
+    var s = document.createElement("script");
+    s.src = files[i];
+    s.onload = function () { load(i + 1); };
+    s.onerror = function () {
+      if (i === 0 && !usedAlt) { usedAlt = true; files[0] = ALT; return load(0); }
+      show("Could not load <b>" + files[i].split("/").pop().split("?")[0] + "</b>. Check your internet, or tell the Skillshow team if it keeps happening.");
+    };
+    document.head.appendChild(s);
+  }
+  load(0);
+})();
+</script>
+</body>
+</html>
